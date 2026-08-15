@@ -54,13 +54,13 @@ PostgreSQL · Tableau
 
 ## 1. Project Overview
 
-**Context:** Unexpected hospital readmissions are avoidable and very inconvenient for everyone involved. From the patient to the hospital, no one benefits from a readmission. If care teams had a way to identify which discharging patients are most likely to return, they would be able to distribute their limited post-discharge resources to patients who are at higher risk rather than treating every patient the exact same.
+&emsp;**Context:** Unexpected hospital readmissions are avoidable and very inconvenient for everyone involved. From the patient to the hospital, no one benefits from a readmission. If care teams had a way to identify which discharging patients are most likely to return, they would be able to distribute their limited post-discharge resources to patients who are at higher risk rather than treating every patient the exact same.
 
-**Problem Statement:** Can patient clinical history, available at the time of discharge, be used to reliably and accurately predict which patients are at higher risk of readmission within 30 days? If so, can it be used to create an actionable, cost-justified intervention strategy?
+&emsp;**Problem Statement:** Can patient clinical history, available at the time of discharge, be used to reliably and accurately predict which patients are at higher risk of readmission within 30 days? If so, can it be used to create an actionable, cost-justified intervention strategy?
 
-**Approach:** Built a fully data-engineered pipeline that ingested raw clinical data into a two-schema AWS RDS/PostgreSQL warehouse, engineered look-back windows for features, compared many baseline model performances, then ultimately trained an XGBoost classification model in AWS SageMaker that used SHAP for interpretability. After a significant amount of time spent on backtesting and model validation, the model was deemed ready for production.
+&emsp;**Approach:** Built a fully data-engineered pipeline that ingested raw clinical data into a two-schema AWS RDS/PostgreSQL warehouse, engineered look-back windows for features, compared many baseline model performances, then ultimately trained an XGBoost classification model in AWS SageMaker that used SHAP for interpretability. After a significant amount of time spent on backtesting and model validation, the model was deemed ready for production.
 
-**Outcome:** A deployed XGBoost model using a 0.10 probability threshold, evaluated primarily on AUC-PR due to the data's class imbalance. The model will be backed by multiple Tableau dashboards and a six-point story translating model output into business impact so that decision-makers can truly understand the difference the model can help make both for hospital operations and quality of care for patients.
+&emsp;**Outcome:** A deployed XGBoost model using a 0.10 probability threshold, evaluated primarily on AUC-PR due to the data's class imbalance. The model will be backed by multiple Tableau dashboards and a six-point story translating model output into business impact so that decision-makers can truly understand the difference the model can help make both for hospital operations and quality of care for patients.
 
 ---
 
@@ -336,7 +336,7 @@ erDiagram
 
 ### Analytical Approach
 
-This was a supervised binary classification problem (30-day readmission: yes/no) with meaningful class imbalance. Three baseline models were benchmarked at the beginning. Those models being XGBoost, Logistic Regression, and Random Forest. All roughly performed the same, but the ultimate choice was XGBoost due to it's ability to capture non-linear relationships. Because of the imbalance of the data (very few readmissions), AUC-PR was used as the primary evaluation metric rather than just AUC-ROC alone. The operating threshold was intentionally tuned (0.10) to prioritize sensitivity for flagging at-risk patients over raw accuracy. A large portion of the analytical effort on this project was spent on a data leakage investigation. After unexpectedly high performance, it was deeply looked into and validated. It was determined that due to deterministic generation of the synthetic data that it was very likely that the model could perform extremely well finding the underlying patterns.
+&emsp;This was a supervised binary classification problem (30-day readmission: yes/no) with meaningful class imbalance. Three baseline models were benchmarked at the beginning. Those models being XGBoost, Logistic Regression, and Random Forest. All roughly performed the same, but the ultimate choice was XGBoost due to it's ability to capture non-linear relationships. Because of the imbalance of the data (very few readmissions), AUC-PR was used as the primary evaluation metric rather than just AUC-ROC alone. The operating threshold was intentionally tuned (0.10) to prioritize sensitivity for flagging at-risk patients over raw accuracy. A large portion of the analytical effort on this project was spent on a data leakage investigation. After unexpectedly high performance, it was deeply looked into and validated. It was determined that due to deterministic generation of the synthetic data that it was very likely that the model could perform extremely well finding the underlying patterns.
 
 ### Key Metrics Defined
 
@@ -360,14 +360,14 @@ This was a supervised binary classification problem (30-day readmission: yes/no)
 
 ## 9. Key Insights
 
-**Insight 1: High post-fix AUC-ROC (~0.91) reflects Synthea's rule-based generative logic, not remaining leakage.**
-After a shuffled-label sanity test and using an entirely separate cohort, it was confirmed that the signal was related to the dataset and its generation method. Synthea generates its synthetic patient data with a more deterministic clinical logic than real populations, because it can't capture the little nuances of the real world. So the level of performance of this model should not be expected to transfer to real-world EHR data.
+### High post-fix AUC-ROC (~0.91) reflects Synthea's rule-based generative logic, not remaining leakage.
+&emsp;After a shuffled-label sanity test and using an entirely separate cohort, it was confirmed that the signal was related to the dataset and its generation method. Synthea generates its synthetic patient data with a more deterministic clinical logic than real populations, because it can't capture the little nuances of the real world. So the level of performance of this model should not be expected to transfer to real-world EHR data.
 
-**Insight 2: AUC-PR and a low 0.10 threshold were necessary, not incidental, choices.**
-Given class imbalance, AUC-ROC alone would not have properly captured the model's true performance. It takes true negatives into account, which is obviously going to be very high in a scenario like hospital readmissions. This would deceptively inflate performance. AUC-PR was selected as the primary metric due to how it focuses entirely on the minority/positive class. Choosing an operating threshold of 0.10 was a deliberate trade-off that favors recall.
+### AUC-PR and a low 0.10 threshold were necessary, not incidental, choices.
+&emsp;Given class imbalance, AUC-ROC alone would not have properly captured the model's true performance. It takes true negatives into account, which is obviously going to be very high in a scenario like hospital readmissions. This would deceptively inflate performance. AUC-PR was selected as the primary metric due to how it focuses entirely on the minority/positive class. Choosing an operating threshold of 0.10 was a deliberate trade-off that favors recall.
 
-**Insight 3: Number of admissions and ED visits in the last 180 days, along with whether the patient had a post-discharge care plan, were leading drivers by SHAP.**
-This shows that recent utilization history and post-discharge planning are very important when it comes to whether a patient may be readmitted. Being able to prove that post-discharge care plans make a significant difference in whether a patient will be readmitted is very strong information to bring to stakeholders' attention.
+### Number of admissions and ED visits in the last 180 days, along with whether the patient had a post-discharge care plan, were leading drivers by SHAP.
+&emsp;This shows that recent utilization history and post-discharge planning are very important when it comes to whether a patient may be readmitted. Being able to prove that post-discharge care plans make a significant difference in whether a patient will be readmitted is very strong information to bring to stakeholders' attention.
 
 ---
 
