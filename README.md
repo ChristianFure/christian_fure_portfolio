@@ -415,8 +415,8 @@ This shows that recent utilization history and post-discharge planning are very 
 | `extract_model_metrics.py` | Script that pulls evaluation metrics for the Tableau suite | `/scripts/extract_model_metrics.py` |
 | Tableau Dashboard 1 | Pre-model data overview | `[/path/to/dashboard]` |
 | Tableau Dashboard 2 | Technical dashboard — PR curve, calibration, SHAP, threshold comparison | `[/path/to/dashboard]` |
-| Tableau Story | Six-point non-technical stakeholder narrative (setup, accuracy, patient impact, risk tiers, value, ask) | `[/path/to/story]` |
-| Written report | 11-section technical write-up, leakage investigation as centerpiece | `/reports/` |
+| Tableau Story | Six-point non-technical stakeholder narrative | `[/path/to/story]` |
+| Leakage Investigation Write-up | Detailed write-up on the leakage investigation, including methods used, tests ran, etc. | `/reports/` |
 
 ---
 
