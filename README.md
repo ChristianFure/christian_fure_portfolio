@@ -412,11 +412,11 @@ This shows that recent utilization history and post-discharge planning are very 
 | Deliverable | Description | Location |
 |-------------|-------------|----------|
 | Trained model (XGBoost) | Final model artifact, deployed via SageMaker | [`/code/model/model.tar.gz`](/code/model/model.tar.gz) |
-| `load_model_and_export_metrics.ipynb` | Script that loads model, runs it on data, and pulls evaluation metrics | `/code/notebooks/load_model_and_export_metrics.ipynb` |
-| Readmission Overview | Dashboard that shows the financial magnitude of readmissions | `/visuals/readmission_overview.md` |
-| Model Metrics Dashboard | Dashboard that shows technical model metrics. PR curve, calibration, SHAP, threshold comparison | `/visuals/model_metrics_overview.md` |
-| Tableau Story | Six-point non-technical stakeholder narrative | `/visuals/stakeholder_story.md` |
-| Leakage Investigation Write-up | Detailed write-up on the leakage investigation (methods used, tests ran, etc.) | `/reports/leakage_investigation_report.md` |
+| `load_model_and_export_metrics.ipynb` | Script that loads model, runs it on data, and pulls evaluation metrics | [`/code/notebooks/load_model_and_export_metrics.ipynb`](/code/notebooks/load_model_and_export_metrics.ipynb) |
+| Readmission Overview | Dashboard that shows the financial magnitude of readmissions | [`/visuals/readmission_overview.md`](/visuals/readmission_overview.md) |
+| Model Metrics Dashboard | Dashboard that shows technical model metrics. PR curve, calibration, SHAP, threshold comparison | [`/visuals/model_metrics_overview.md`](/visuals/model_metrics_overview.md) |
+| Tableau Story | Six-point non-technical stakeholder narrative | [`/visuals/stakeholder_story.md`](/visuals/stakeholder_story.md) |
+| Leakage Investigation Write-up | Detailed write-up on the leakage investigation (methods used, tests ran, etc.) | [`/reports/leakage_investigation_report.md`](/reports/leakage_investigation_report.md) |
 
 ---
 
