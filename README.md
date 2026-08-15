@@ -425,9 +425,9 @@ This shows that recent utilization history and post-discharge planning are very 
 **Christian Fure**
 Computer Science graduate pursuing healthcare/clinical data analytics & machine learning
 
-- 🔗 [https://www.linkedin.com/in/christian-fure-771462201/]
-- 💼 [Portfolio or GitHub profile URL](https://github.com/ChristianFure)
-- 📧 [christianjfure@gmail.com]
+- 🔗 [LinkedIn](https://www.linkedin.com/in/christian-fure-771462201/)
+- 💼 [GitHub](https://github.com/ChristianFure)
+- 📧 christianjfure@gmail.com
 
 ---
 
