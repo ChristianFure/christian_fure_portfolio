@@ -115,7 +115,7 @@ readmission-prediction/
 │   ├── model/
 │
 ├── queries/
-│   ├── final/                # Final model ready wide table
+│   ├── final/                # Final model ready table
 │   ├── transformations/      # Staging → features schema logic, lookback windows, engineered features
 │   ├── ingestion/            # Data ingestion - raw synthea csvs -> sql database
 │
