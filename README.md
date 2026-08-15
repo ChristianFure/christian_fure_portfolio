@@ -1,21 +1,36 @@
-# [Project Title]
-> *One sentence. What did you analyze, build, or solve - and why does it matter?*
+# 30-Day Hospital Readmission Risk Prediction
+> An end-to-end ML pipeline that predicts which inpatients are at high risk of unplanned 30-day readmission, so care teams can prioritize post-discharge intervention where it matters most.
 
 ---
 
-## ⚙️ Project Type Flags
-> *Check what applies. This helps reviewers and collaborators understand the nature of the work at a glance. Delete this block before publishing.*
+## Skills & Tools
+> All skills and tools showcased in this project. More details later in the document.
 
-- [x] Exploratory Data Analysis (EDA)
-- [ ] SQL Analysis / Querying
-- [ ] Dashboard / Data Visualization
-- [ ] Data Pipeline / ETL
-- [ ] Predictive Modelling / Machine Learning
-- [ ] Data Cleaning / Wrangling
-- [ ] End-to-End (multiple of the above)
-- [ ] Other: ___________
+**Machine Learning & Data Science**
+- Predictive Modeling · Feature Engineering · Model Interpretability · Statistical Analysis · Data Leakage Diagnosis
 
-[Check it out](https://github.com/ChristianFure/christian_fure_portfolio/blob/main/data/raw/raw_data.md)
+
+**Data Engineering & Cloud**
+- SQL & Database Design · ETL Pipeline Design · Cloud Infrastructure
+
+
+**Visualization & Communication**
+- Dashboard Design · Data Storytelling
+
+
+**Languages**
+- Python · SQL
+
+
+**ML & Data**
+- XGBoost · scikit-learn · pandas · SHAP · MLflow
+
+
+**Cloud & Infrastructure**
+- AWS S3 · AWS RDS · AWS SageMaker · AWS Step Functions
+
+**Databases & Visualization**
+PostgreSQL · Tableau
 
 ---
 
@@ -26,7 +41,7 @@
 4. [Repository Structure](#4-repository-structure)
 5. [Data Workflow](#5-data-workflow)
 6. [Data Model & Schema](#6-data-model--schema)
-7. [ERD - Entity Relationship Diagram](#7-erd--entity-relationship-diagram) *(SQL projects)*
+7. [ERD - Entity Relationship Diagram](#7-erd---entity-relationship-diagram)
 8. [Analysis & Metrics](#8-analysis--metrics)
 9. [Key Insights](#9-key-insights)
 10. [Recommendations](#10-recommendations)
@@ -39,57 +54,22 @@
 
 ## 1. Project Overview
 
-<!--
-  Write 3–5 sentences in plain language.
-  Cover: context → problem → approach → outcome.
-  Read it out loud. If it sounds like a form - rewrite it.
+**Context:** Unexpected hospital readmissions are avoidable and very inconvenient for everyone involved. From the patient to the hospital, no one benefits from a readmission. If care teams had a way to identify which discharging patients are most likely to return, they would be able to distribute their limited post-discharge resources to patients who are at higher risk rather than treating every patient the exact same.
 
-  WHAT GOOD LOOKS LIKE:
-  "A mid-size retail business was seeing inconsistent revenue across
-  its regional stores but couldn't identify the root cause. This project
-  explored 18 months of transaction data across five regions to determine
-  whether underperformance was driven by sales volume, pricing, or return
-  rates. The analysis revealed that one region's gap was almost entirely
-  explained by an unusually high return rate on a single product category -
-  a finding invisible in the company's top-level reporting."
+**Problem Statement:** Can patient clinical history, available at the time of discharge, be used to reliably and accurately predict which patients are at higher risk of readmission within 30 days? If so, can it be used to create an actionable, cost-justified intervention strategy?
 
-  WHAT TO AVOID:
-  "This project analyzes sales data to find trends and insights."
-  (Too vague. Could describe 10,000 projects. Describes none of them.)
--->
+**Approach:** Built a fully data-engineered pipeline that ingested raw clinical data into a two-schema AWS RDS/PostgreSQL warehouse, engineered look-back windows for features, compared many baseline model performances, then ultimately trained an XGBoost classification model in AWS SageMaker that used SHAP for interpretability. After a significant amount of time spent on backtesting and model validation, the model was deemed ready for production.
 
-**Context:** [The business, research, or personal situation that motivated this project.]
-
-**Problem Statement:** [The specific question or challenge you were addressing.]
-
-**Approach:** [In 1–2 sentences - how did you tackle it?]
-
-**Outcome:** [What did you produce or discover?]
+**Outcome:** A deployed XGBoost model using a 0.10 probability threshold, evaluated primarily on AUC-PR due to the data's class imbalance. The model will be backed by multiple Tableau dashboards and a six-point story translating model output into business impact so that decision-makers can truly understand the difference the model can help make both for hospital operations and quality of care for patients.
 
 ---
 
 ## 2. Objectives
 
-<!--
-  Write objectives that are specific enough to succeed or fail.
-  Use action-oriented verbs: Identify, Determine, Quantify, Build, Evaluate.
-
-  WHAT GOOD LOOKS LIKE:
-  ✅ "Determine whether customer churn rate correlates with support ticket volume."
-  ✅ "Identify the top three revenue-driving product categories across all regions."
-  ✅ "Build a reproducible pipeline that ingests and cleans daily sales exports."
-
-  WHAT TO AVOID:
-  ❌ "Explore the data."
-  ❌ "Gain insights."
-  ❌ "Understand trends."
-  (These can't fail - which means they can't succeed either.)
--->
-
-- **Primary Objective:** [The main thing you set out to do]
-- **Secondary Objective 1:** [Supporting goal]
-- **Secondary Objective 2:** [Supporting goal]
-- **Secondary Objective 3:** [Remove if not applicable]
+- **Primary Objective:** Build a classification model that accurately outputs a patient's risk for readmission within 30 days at the time of discharge.
+- **Secondary Objective 1:** Engineer a reproducible, leakage-free feature pipeline from raw synthetic EHR data (labs, conditions, medications, utilization history).
+- **Secondary Objective 2:** Rigorously validate that model performance reflects genuine signal as opposed to data leakage.
+- **Secondary Objective 3:** Translate model output into business impact that anyone, technical or non-technical, can understand.
 
 > 💡 *Every analysis decision in this project traces back to one of these objectives.*
 
@@ -99,411 +79,331 @@
 
 ### Scope
 
-<!--
-  WHAT GOOD LOOKS LIKE:
-  In Scope: "Transaction-level data for Regions A–E, Jan 2023–Jun 2024.
-             Analysis covers revenue, return rates, and product category performance."
-  Out of Scope: "Customer demographics and marketing spend data were excluded -
-                 demographic data was incomplete for two regions, and marketing
-                 data sits in a separate system outside this engagement."
-
-  WHAT TO AVOID:
-  ❌ Leaving Out of Scope blank. This is the section that protects your credibility.
-     If you don't define the fence, reviewers assume you missed things.
--->
-
-| Dimension | Details |
-|-----------|---------|
-| **In Scope** | [What is included - data sources, time periods, segments] |
-| **Out of Scope** | [What you explicitly excluded - and a brief reason why] |
-| **Time Period** | [Date range of the data or the project itself] |
-| **Granularity** | [Unit of analysis - row-level, daily aggregates, per-user, etc.] |
+| Dimension        | Details                                                                                                                                                                                                                                                                                                                                                             |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **In Scope**     | Synthea-generated synthetic inpatient encounters, conditions, medications, and lab results; feature engineering across utilization/condition/medication lookback windows; model training, threshold selection, and interpretability (SHAP); Tableau reporting suite.                                                                                                |
+| **Out of Scope** | This project uses generated synthetic patient data, so the data doesn't include real PHI, but it was treated as such. It was not used, stored, or processed at any stage to adhere to HIPAA guidelines. Fields like ssn, drivers, and passport are synthetic, and HIPAA does not apply, but the pipeline is structured as if it did, to reflect realistic practice. |
+| **Time Period**  | Synthetic patient encounter history generated by Synthea; savings projections estimated on average admission volume and other data from the years 2021–2025.                                                                                                                                                                                                        |
+| **Granularity**  | Encounter/admission-level records, aggregated into patient-level features via multi-domain look-back windows and foreign keys.                                                                                                                                                                                                                                      |
 
 ### Tools & Technologies
 
-<!--
-  List only what you actually used on this project.
-  This is not your skills section - it's the project's technical context.
--->
-
-| Category | Tool(s) Used |
-|----------|-------------|
-| Data Storage | [e.g., PostgreSQL, CSV files, BigQuery, S3] |
-| Data Processing | [e.g., Python, R, SQL, Excel, dbt] |
-| Analysis | [e.g., pandas, dplyr, custom SQL queries] |
-| Visualization | [e.g., Matplotlib, Tableau, Power BI, Looker] |
-| Version Control | [e.g., Git / GitHub] |
-| Documentation | [e.g., Markdown, Notion] |
-| Other | [Any additional tools] |
+| Category            | Tool(s) Used                                                                                                                                 |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Data Storage        | AWS S3 (raw, cleaned, models), AWS RDS / PostgreSQL (staging + features schemas)                                                             |
+| Data Processing     | Python (pandas), SQL, `aws_s3` extension for S3 → RDS ingestion, AWS Step Functions (pipeline orchestration)                                 |
+| Analysis / Modeling | XGBoost (primary model), scikit-learn (logistic regression & random forest baselines), SHAP (interpretability), MLflow (experiment tracking) |
+| Visualization       | Tableau (2-dashboard suite + Tableau Story)                                                                                                  |
+| Deployment          | AWS SageMaker                                                                                                                                |
+| Version Control     | Git / GitHub                                                                                                                                 |
+| Documentation       | Markdown                                                                                                                                     |
+| Other               | Custom Python metrics extraction script (`extract_model_metrics.py`) feeding Tableau dashboards                                              |
 
 ---
 
 ## 4. Repository Structure
 
 ```
-[project-root]/
+readmission-prediction/
 │
 ├── data/
-│   ├── raw/                  # Original, unmodified source data - never edited
-│   ├── processed/            # Cleaned and transformed data
-│   └── external/             # Reference data, lookup tables, third-party files
+│   ├── raw/                  # Synthea-generated synthetic patient data
+│   ├── processed/            # Cleaned, feature-engineered tables
+│   └── external/             # LOINC/ICD-10/RxNorm reference tables
 │
-├── notebooks/                # Jupyter, R Markdown, or Colab notebooks
+├── notebooks/                # EDA, leakage investigation, model comparison notebooks
 │
-├── scripts/                  # Reusable .py, .R, or .sh processing files
+├── scripts/
+│   └── extract_model_metrics.py   # Pulls model + eval metrics for Tableau dashboards
 │
-├── queries/                  # SQL files (retain this folder for SQL-heavy projects)
-│   ├── exploratory/          # Ad-hoc or investigative queries
-│   ├── transformations/      # Cleaning and reshaping logic
-│   └── final/                # Production-ready or presentation queries
+├── queries/
+│   ├── exploratory/          # Ad-hoc investigation (incl. leakage audit queries)
+│   ├── transformations/      # Staging → features schema logic, lookback windows
+│   └── final/                # Production feature-build queries
 │
-├── reports/                  # Final outputs: PDFs, slide decks, Word docs
+├── reports/                  # Tableau Story export
 │
-├── visuals/                  # Exported charts, dashboard screenshots, ERD diagrams
+├── visuals/                  # Dashboard exports, SHAP plots, ERD
 │
-├── docs/                     # Data dictionaries, schema notes, reference material
+├── docs/                     # Data dictionary, schema notes, leakage investigation writeup
 │
-├── project_metadata.yml      # Machine-readable metadata (optional)
-└── README.md                 # You are here
+├── project_metadata.yml
+└── README.md
 ```
-
-> ⚠️ *Delete folders you didn't use. An empty folder is worse than no folder.*
-> SQL-heavy projects: keep `queries/`. Analysis-only projects: keep `notebooks/`. Both? Keep both.
 
 ---
 
 ## 5. Data Workflow
 
-<!--
-  Show how data moved through your project - from source to output.
-  Every transformation decision should be traceable here.
-
-  WHAT GOOD LOOKS LIKE:
-  1. Source: "Monthly CSV exports pulled from the internal POS system.
-              Five files, one per region, covering Jan 2023–Jun 2024."
-  2. Ingestion: "Loaded into Python using pandas. Files concatenated into
-                 a single dataframe (approx. 340,000 rows)."
-  3. Cleaning: "Removed 1.2% of rows with null transaction IDs.
-                Standardised date formats across regional files.
-                Resolved product category naming inconsistencies (3 variants → 1)."
-  4. Transformation: "Created a returns_rate field at product-category level.
-                      Aggregated to weekly and regional grain for trend analysis."
-  5. Analysis: "Descriptive statistics, regional comparison, return rate
-                segmentation by product category."
-  6. Output: "Summary report (PDF), annotated notebook, processed CSV."
-
-  WHAT TO AVOID:
-  ❌ "Data was cleaned and analysed." (No chain. No decisions. No trust.)
--->
-
 ```
-[Data Source(s)]
+[Synthea synthetic EHR generator]
       ↓
-[Ingestion / Collection Method]
+[S3 raw zone - Hive-style partitioning]
       ↓
-[Cleaning & Transformation]
+[RDS PostgreSQL — staging schema (aws_s3 ingestion)]
       ↓
-[Analysis / Modelling / Querying]
+[Feature engineering — features schema]
       ↓
-[Output / Visualisation / Reporting]
+[XGBoost / LogReg / RF training + SHAP + MLflow tracking]
+      ↓
+[SageMaker deployment + Tableau dashboards/Story]
 ```
 
-1. **Source:** [Where did the data come from? Format, size, access method.]
-2. **Ingestion:** [How was it brought in?]
-3. **Cleaning:** [What issues did you find and fix?]
-4. **Transformation:** [What new fields, aggregations, or structures did you create?]
-5. **Analysis:** [What methods - statistical, visual, query-based, model-based?]
-6. **Output:** [What form do the results take?]
+1. **Source:** Synthea generated synthetic patient populations with semi-realistic encounter, condition, medication, and utilization histories.
+2. **Ingestion:** Raw data landed in S3 with Hive-style partitioning, then bulk-loaded into an RDS PostgreSQL **staging** schema using the `aws_s3` extension.
+3. **Cleaning:** XGBoost was left with raw null values, the decision tree baseline was imputed with sentinel values, and the logistic regression baseline used median imputation. Overlapping inpatient stays was also merged using the popular gaps-and-islands SQL logic.
+4. **Transformation:** Built a separate features schema, engineered chronic condition flags, medication counts, and utilization history across multiple look-back windows (e.g., prior admissions, ED visits).
+5. **Analysis:** Trained XGBoost as the primary model against logistic regression and random forest baselines, with staged hyperparameter tuning (`RandomizedSearchCV`), patient-level cross-validation, and SHAP for feature attribution. AUC-PR used as the primary metric given class imbalance; operating threshold set to 0.10.
+6. **Output:** SageMaker-deployed model, MLflow-tracked experiment history, `extract_model_metrics.py` output feeding a three-part Tableau deliverable (two technical dashboards + a six-point Story for non-technical stakeholders).
 
 ---
 
 ## 6. Data Model & Schema
 
-<!--
-  Define your fields so that someone reading your analysis can follow along
-  without digging through your code.
+The features layer is built as five tables in the `features` schema: a base cohort table, three domain-specific feature tables (utilization, medication, condition), and a final model-ready table that joins everything on `stay_id`.
 
-  WHAT GOOD LOOKS LIKE (one row example):
-  | transaction_id | string | Unique identifier per sales transaction | TXN-00482 |
-  | return_flag    | boolean | Whether the transaction included a return | TRUE |
-  | region_code    | string | Two-letter identifier for store region | "NE" |
+### `features.cohort`
 
-  WHAT TO AVOID:
-  ❌ Skipping this section because "the field names are self-explanatory."
-     They're not. Not to a reviewer. Not to you in six months.
+Base population table — one row per inpatient stay, with the outcome label.
 
-  📌 FOR SQL PROJECTS: If you have multiple tables, create one block per table.
-     Describe join keys and relationships here. Your ERD (Section 7) will
-     visualise what this section describes in text.
+|Field Name|Data Type|Nullable|Description|
+|---|---|---|---|
+|`stay_id`|uuid|NO|Primary key — unique identifier for the inpatient stay|
+|`patient_id`|uuid|YES|Patient identifier|
+|`gender_male`|integer|YES|Binary flag — 1 if patient is male|
+|`gender_female`|integer|YES|Binary flag — 1 if patient is female|
+|`age`|numeric|YES|Patient age at time of stay|
+|`stay_start`|date|YES|Admission date|
+|`stay_end`|date|YES|Discharge date|
+|`los`|integer|YES|Length of stay (days)|
+|`days_til_next_admission`|integer|YES|Days between this discharge and the next admission, if any|
+|`total_stay_cost`|numeric|YES|Total cost of the inpatient stay|
+|`readmit_30d`|integer|YES|**Target label** — 1 if a new admission occurred within 30 days of discharge|
 
-  📌 FOR NON-SQL PROJECTS: Describe the shape of your dataset informally
-     if a formal schema doesn't apply. Even one paragraph is more helpful than nothing.
--->
+### `features.utilization_features`
 
-### Dataset / Table: `[name]`
+Prior healthcare utilization, keyed on `stay_id`.
 
-| Field Name | Data Type | Description | Example Value |
-|------------|-----------|-------------|---------------|
-| `[field_1]` | [string / int / date / float / boolean] | [What this field represents] | [Non-sensitive example] |
-| `[field_2]` | [string / int / date / float / boolean] | [What this field represents] | [Non-sensitive example] |
-| `[field_3]` | [string / int / date / float / boolean] | [What this field represents] | [Non-sensitive example] |
+|Field Name|Data Type|Nullable|Description|
+|---|---|---|---|
+|`stay_id`|uuid|YES|Foreign key → `features.cohort.stay_id`|
+|`prior_admissions_90d`|bigint|YES|Inpatient admissions in the 90 days prior|
+|`prior_admissions_180d`|bigint|YES|Inpatient admissions in the 180 days prior|
+|`prior_admissions_365d`|bigint|YES|Inpatient admissions in the 365 days prior|
+|`ed_visits_90d`|bigint|YES|ED visits in the 90 days prior|
+|`ed_visits_120d`|bigint|YES|ED visits in the 120 days prior|
+|`ed_visits_180d`|bigint|YES|ED visits in the 180 days prior|
+|`ed_visits_365d`|bigint|YES|ED visits in the 365 days prior|
+|`days_since_last_admit`|integer|YES|Days since the patient's most recent prior admission|
+|`had_prior_admission`|integer|YES|Binary flag — 1 if any prior admission exists|
+|`los`|integer|YES|Length of stay (days) for this encounter|
+|`has_post_discharge_careplan`|integer|YES|Binary flag — 1 if a post-discharge care plan was in place|
+|`cost_of_readmission`|numeric|YES|Cost associated with the readmission event, where applicable|
 
-> **Row count (approx.):** [X rows]
-> **Date range:** [Start] – [End]
-> **Key join / relationship:** [e.g., `orders.customer_id` → `customers.id`]
+### `features.medication_features`
 
-*Add additional table blocks as needed for multi-table projects.*
+Active medication burden at discharge, keyed on `stay_id`.
+
+|Field Name|Data Type|Nullable|Description|
+|---|---|---|---|
+|`stay_id`|uuid|YES|Foreign key → `features.cohort.stay_id`|
+|`active_medications`|bigint|YES|Count of active medications at time of discharge|
+
+### `features.condition_features`
+
+Chronic condition burden and key lab markers, keyed on `stay_id`.
+
+|Field Name|Data Type|Nullable|Description|
+|---|---|---|---|
+|`stay_id`|uuid|YES|Foreign key → `features.cohort.stay_id`|
+|`active_conditions`|bigint|YES|Count of active chronic conditions|
+|`has_heart_failure`|integer|YES|Binary flag — 1 if patient has an active heart failure diagnosis|
+|`has_diabetes`|integer|YES|Binary flag — 1 if patient has an active diabetes diagnosis|
+|`latest_a1c`|numeric|YES|Most recent A1c lab result (LOINC `4548-4`)|
+|`has_recent_a1c`|integer|YES|Binary flag — 1 if an A1c result exists within the lookback window|
+
+### `features.model_features` _(final table fed to the model)_
+
+Join of `cohort` + all three domain feature tables on `stay_id` — this is the table the XGBoost/logistic regression/random forest models train and predict on.
+
+|Field Name|Data Type|Nullable|Description|
+|---|---|---|---|
+|`stay_id`|uuid|YES|Unique stay identifier|
+|`patient_id`|uuid|YES|Patient identifier|
+|`age`|numeric|YES|Patient age at time of stay|
+|`prior_admissions_180d`|bigint|YES|Inpatient admissions in the 180 days prior|
+|`ed_visits_180d`|bigint|YES|ED visits in the 180 days prior|
+|`days_since_last_admit`|integer|YES|Days since the patient's most recent prior admission|
+|`had_prior_admission`|integer|YES|Binary flag — 1 if any prior admission exists|
+|`los`|integer|YES|Length of stay (days)|
+|`has_post_discharge_careplan`|integer|YES|Binary flag — 1 if a post-discharge care plan was in place|
+|`active_conditions`|bigint|YES|Count of active chronic conditions|
+|`has_diabetes`|integer|YES|Binary flag — 1 if patient has an active diabetes diagnosis|
+|`has_heart_failure`|integer|YES|Binary flag — 1 if patient has an active heart failure diagnosis|
+|`latest_a1c`|numeric|YES|Most recent A1c lab result|
+|`has_recent_a1c`|integer|YES|Binary flag — 1 if a recent A1c result exists|
+|`active_medications`|bigint|YES|Count of active medications at discharge|
+|`readmit_30d`|integer|YES|**Target label**|
+
+> **Key join:** all feature tables join back to `features.cohort` on `stay_id`. `readmit_30d` is carried through from `cohort` as the training target.
+
+*See Section 7 for the staging → features schema relationship.*
 
 ---
 
 ## 7. ERD - Entity Relationship Diagram
-### *(Primarily for SQL Projects - remove this section if not applicable)*
 
-<!--
-  An ERD shows how your tables connect to each other visually.
-  It is the fastest way for a reviewer to understand the data structure
-  of a SQL project without reading every query.
-
-  HOW TO INCLUDE YOUR ERD:
-  Option A - Image embed (most common):
-    Export your ERD from dbdiagram.io, DBeaver, Lucidchart, or similar.
-    Save to /visuals/erd.png and reference it below.
-
-  Option B - dbdiagram.io code block (version-controllable):
-    Paste your schema definition code directly in the fenced block below.
-    Anyone can paste it into dbdiagram.io to regenerate the visual.
-
-  Option C - Mermaid diagram (renders natively in GitHub):
-    Use the mermaid code block syntax below.
-    GitHub will render this as a diagram automatically.
-
-  PICK ONE. Don't use all three. Delete the options you don't use.
--->
-
-### Option A - Embedded Image
-![ERD Diagram](visuals/erd.png)
-*[Brief caption: e.g., "Three-table schema - orders, customers, and products joined on shared IDs."]*
-
----
-
-### Option B - dbdiagram.io Schema Definition
-```
-Table orders {
-  order_id    int     [pk]
-  customer_id int     [ref: > customers.customer_id]
-  product_id  int     [ref: > products.product_id]
-  order_date  date
-  amount      float
-}
-
-Table customers {
-  customer_id int  [pk]
-  region_code string
-  signup_date date
-}
-
-Table products {
-  product_id   int    [pk]
-  category     string
-  unit_price   float
-}
-```
-*Paste this into [dbdiagram.io](https://dbdiagram.io) to view the visual.*
-
----
-
-### Option C - Mermaid Diagram *(renders on GitHub)*
 ```mermaid
 erDiagram
-    ORDERS {
-        int order_id PK
-        int customer_id FK
-        int product_id FK
-        date order_date
-        float amount
+    COHORT {
+        uuid stay_id PK
+        uuid patient_id
+        integer gender_male
+        integer gender_female
+        numeric age
+        date stay_start
+        date stay_end
+        integer los
+        integer days_til_next_admission
+        numeric total_stay_cost
+        integer readmit_30d
     }
-    CUSTOMERS {
-        int customer_id PK
-        string region_code
-        date signup_date
+    UTILIZATION_FEATURES {
+        uuid stay_id FK
+        bigint prior_admissions_90d
+        bigint prior_admissions_180d
+        bigint prior_admissions_365d
+        bigint ed_visits_90d
+        bigint ed_visits_120d
+        bigint ed_visits_180d
+        bigint ed_visits_365d
+        integer days_since_last_admit
+        integer had_prior_admission
+        integer los
+        integer has_post_discharge_careplan
+        numeric cost_of_readmission
     }
-    PRODUCTS {
-        int product_id PK
-        string category
-        float unit_price
+    MEDICATION_FEATURES {
+        uuid stay_id FK
+        bigint active_medications
     }
-    ORDERS ||--o{ CUSTOMERS : "placed by"
-    ORDERS ||--o{ PRODUCTS : "contains"
+    CONDITION_FEATURES {
+        uuid stay_id FK
+        bigint active_conditions
+        integer has_heart_failure
+        integer has_diabetes
+        numeric latest_a1c
+        integer has_recent_a1c
+    }
+    MODEL_FEATURES {
+        uuid stay_id FK
+        uuid patient_id
+        numeric age
+        bigint prior_admissions_180d
+        bigint ed_visits_180d
+        integer days_since_last_admit
+        integer had_prior_admission
+        integer los
+        integer has_post_discharge_careplan
+        bigint active_conditions
+        integer has_diabetes
+        integer has_heart_failure
+        numeric latest_a1c
+        integer has_recent_a1c
+        bigint active_medications
+        integer readmit_30d
+    }
+    COHORT ||--o| UTILIZATION_FEATURES : "has"
+    COHORT ||--o| MEDICATION_FEATURES : "has"
+    COHORT ||--o| CONDITION_FEATURES : "has"
+    UTILIZATION_FEATURES ||--|| MODEL_FEATURES : "feeds"
+    MEDICATION_FEATURES ||--|| MODEL_FEATURES : "feeds"
+    CONDITION_FEATURES ||--|| MODEL_FEATURES : "feeds"
+    COHORT ||--|| MODEL_FEATURES : "feeds"
 ```
-
----
 
 **Table Relationships Summary:**
 
-| Relationship | Join Key | Type |
-|-------------|----------|------|
-| `orders` → `customers` | `customer_id` | Many-to-One |
-| `orders` → `products` | `product_id` | Many-to-One |
-| [Add rows as needed] | | |
+| Relationship                              | Join Key  | Type       |
+| ----------------------------------------- | --------- | ---------- |
+| `cohort` → `utilization_features`         | `stay_id` | One-to-One |
+| `cohort` → `medication_features`          | `stay_id` | One-to-One |
+| `cohort` → `condition_features`           | `stay_id` | One-to-One |
+| `cohort` → `model_features`               | `stay_id` | One-to-One |
+| `utilization_features` → `model_features` | `stay_id` | One-to-One |
+| `medication_features` → `model_features`  | `stay_id` | One-to-One |
+| `condition_features` → `model_features`   | `stay_id` | One-to-One |
 
 ---
 
 ## 8. Analysis & Metrics
 
-<!--
-  Explain what you measured and how - before you share what you found.
-
-  WHAT GOOD LOOKS LIKE:
-  Metric: "Customer Return Rate"
-  Definition: "Number of transactions flagged as returns divided by total
-               transactions, calculated at product-category and regional grain."
-  Why It Matters: "Return rate - not sales volume - was hypothesised to
-                  explain regional revenue gaps. This metric tests that hypothesis."
-
-  WHAT TO AVOID:
-  ❌ Defining a metric only in code: SUM(returns) / COUNT(transaction_id)
-     That's an implementation. Write the plain-language definition here.
-     Both belong in your project - the definition in the README,
-     the implementation in the code.
--->
-
 ### Analytical Approach
 
-[Describe how you approached the analysis. Were you exploring patterns? Testing a hypothesis? Building and validating a pipeline? Be honest about your method - exploratory work is valid, just call it that.]
+This was a supervised binary classification problem (30-day readmission: yes/no) with meaningful class imbalance. Three baseline models were benchmarked at the beginning. Those models being XGBoost, Logistic Regression, and Random Forest. All roughly performed the same, but the ultimate choice was XGBoost due to it's ability to capture non-linear relationships. Because of the imbalance of the data (very few readmissions), AUC-PR was used as the primary evaluation metric rather than just AUC-ROC alone. The operating threshold was intentionally tuned (0.10) to prioritize sensitivity for flagging at-risk patients over raw accuracy. A large portion of the analytical effort on this project was spent on a data leakage investigation. After unexpectedly high performance, it was deeply looked into and validated. It was determined that due to deterministic generation of the synthetic data that it was very likely that the model could perform extremely well finding the underlying patterns.
 
 ### Key Metrics Defined
 
-| Metric | Plain-Language Definition | Why It Matters |
-|--------|--------------------------|----------------|
-| `[Metric 1]` | [What it measures, in one sentence] | [What decision or question it answers] |
-| `[Metric 2]` | [What it measures, in one sentence] | [What decision or question it answers] |
-| `[Metric 3]` | [What it measures, in one sentence] | [What decision or question it answers] |
+| Metric                       | Plain-Language Definition                                                                      | Why It Matters                                                                                                                  |
+| ---------------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `AUC-PR`                     | Precision-recall trade-off across thresholds                                                   | **Primary metric** - more informative than AUC-ROC under class imbalance                                                        |
+| `AUC-ROC`                    | Model's ability to rank readmitted vs. non-readmitted patients correctly across all thresholds | Standard discrimination benchmark; useful for comparing against baselines                                                       |
+| `Operating Threshold (0.10)` | Probability cutoff above which a patient is flagged high-risk                                  | Chosen to favor catching more true positives, accepting more false positives, appropriate for a screening use case              |
+| `Cost-Weighted Savings`      | Projected net savings from intervening on flagged patients                                     | Ties model output to a business case: `COST_PER_INTERVENTION=$300`, `AVG_READMISSION_COST=$16,300`, `INTERVENTION_EFFICACY=20%` |
 
 ### Methods Used
 
-- [e.g., Descriptive statistics - distribution, central tendency, outlier detection]
-- [e.g., Trend analysis across [time period]]
-- [e.g., Segmentation / group comparison by [dimension]]
-- [e.g., Correlation analysis between [variable A] and [variable B]]
-- [e.g., SQL window functions for [specific aggregation]]
-- [e.g., Custom aggregation or transformation logic in [tool]]
+- Staged hyperparameter tuning via `RandomizedSearchCV`
+- Patient-level cross-validation (`GroupShuffleSplit` / `StratifiedGroupKFold`) to prevent train/test leakage
+- SHAP for global and local feature interpretability
+- Threshold selection tuned to the AUC-PR curve rather than default 0.5
+- Shuffled-label sanity test and independent holdout cohort to validate post-fix performance
+- Probability-weighted cost-benefit modeling for intervention savings projections
 
 ---
 
 ## 9. Key Insights
 
-<!--
-  Findings + implications. Not just what happened - what it means.
+**Insight 1: High post-fix AUC-ROC (~0.91) reflects Synthea's rule-based generative logic, not remaining leakage.**
+After a shuffled-label sanity test and using an entirely separate cohort, it was confirmed that the signal was related to the dataset and its generation method. Synthea generates its synthetic patient data with a more deterministic clinical logic than real populations, because it can't capture the little nuances of the real world. So the level of performance of this model should not be expected to transfer to real-world EHR data.
 
-  WHAT GOOD LOOKS LIKE:
-  ✅ "Return rates, not sales volume, explain Region A's underperformance.
-      Region A's return rate on home goods was 34% - more than double the
-      company average. Revenue was not lost at the point of sale; it was
-      lost post-sale through refunds. This points to a fulfilment or
-      product quality issue specific to that region, not a demand problem."
+**Insight 2: AUC-PR and a low 0.10 threshold were necessary, not incidental, choices.**
+Given class imbalance, AUC-ROC alone would not have properly captured the model's true performance. It takes true negatives into account, which is obviously going to be very high in a scenario like hospital readmissions. This would deceptively inflate performance. AUC-PR was selected as the primary metric due to how it focuses entirely on the minority/positive class. Choosing an operating threshold of 0.10 was a deliberate trade-off that favors recall.
 
-  WHAT TO AVOID:
-  ❌ "Region A had lower revenue than other regions in Q4."
-     (That's an observation. It describes what happened.
-      An insight says what it means and where to look next.)
-
-  Aim for 3–6 insights. Quality over quantity.
--->
-
-**Insight 1: [Short descriptive headline]**
-[What you found + what it suggests. One short paragraph.]
-
-**Insight 2: [Short descriptive headline]**
-[What you found + what it suggests.]
-
-**Insight 3: [Short descriptive headline]**
-[What you found + what it suggests.]
-
-**Insight 4 (if applicable): [Short descriptive headline]**
-[What you found + what it suggests.]
+**Insight 3: Number of admissions and ED visits in the last 180 days, along with whether the patient had a post-discharge care plan, were leading drivers by SHAP.**
+This shows that recent utilization history and post-discharge planning are very important when it comes to whether a patient may be readmitted. Being able to prove that post-discharge care plans make a significant difference in whether a patient will be readmitted is very strong information to bring to stakeholders' attention.
 
 ---
 
 ## 10. Recommendations
 
-<!--
-  Action-oriented. Addressed to a real audience.
-  Tied explicitly to the insight that supports each one.
-
-  WHAT GOOD LOOKS LIKE:
-  Priority: High
-  Recommendation: "Conduct a fulfilment audit for home goods deliveries
-                   in Region A - specifically investigating whether returns
-                   correlate with a particular warehouse, carrier, or SKU batch."
-  Based On: Insight 1 - return rate anomaly in Region A
-  Owner: Operations / Supply Chain team
-
-  WHAT TO AVOID:
-  ❌ "Improve the return rate."
-     (Not actionable. Doesn't say who, how, or where to start.)
-  ❌ "Further analysis is needed."
-     (This is a placeholder, not a recommendation.)
--->
-
-| Priority | Recommendation | Based On | Suggested Owner |
-|----------|---------------|----------|-----------------|
-| High | [Specific, actionable step] | [Insight it comes from] | [Who should act] |
-| Medium | [Specific, actionable step] | [Insight it comes from] | [Who should act] |
-| Low | [Exploratory or longer-term suggestion] | [Insight it comes from] | [Who should act] |
+| Priority | Recommendation                                                                                                                               | Based On  | Suggested Owner                           |
+| -------- | -------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ----------------------------------------- |
+| High     | Pilot a targeted post-discharge outreach program for patients flagged above the 0.10 risk threshold before any broader rollout               | Insight 2 | Care management / discharge planning team |
+| Medium   | Validate the pipeline and model against real (de-identified) claims or EHR data before drawing conclusions about real-world performance      | Insight 1 | Data science / clinical informatics       |
+| Low      | Extend feature set with social determinants of health (housing, transportation access) if a real dataset with those fields becomes available | Insight 3 | Data engineering                          |
 
 ---
 
 ## 11. Assumptions & Limitations
 
-<!--
-  WHAT GOOD LOOKS LIKE:
-  Assumption: "Transaction records were assumed to be complete for all five regions.
-               No validation was performed against source system record counts."
-  Limitation: "The analysis cannot distinguish between returns initiated by
-               the customer vs. returns initiated by the business (e.g., recalls).
-               If business-initiated returns are concentrated in Region A, the
-               return rate finding may reflect a policy decision, not a quality issue."
-
-  WHAT TO AVOID:
-  ❌ Leaving this section blank or writing "None known."
-     Every project has limitations. Documenting them is a sign of
-     analytical maturity - not a confession of failure.
--->
-
 ### Assumptions
-- [What did you treat as true without being able to verify?]
-- [What simplifications did you make for scope or feasibility?]
-- [What domain rules or definitions did you accept as given?]
+- Synthea patient data is assumed representative enough to prototype a pipeline and modeling approach, but not to be used on real world data until the underlying model is trained on real-world data.
+- The discharge-to-admission gap definition (≤30 days) is accepted as the ground-truth readmission label.
+- Cost constants (`$300` per intervention, `$16,300` average readmission cost, `20%` intervention efficacy) are treated as reasonable planning estimates, not measured values from a real program.
 
 ### Limitations
-- [What gaps exist in the data?]
-- [What analysis was out of scope but could affect interpretation?]
-- [What would a more rigorous version of this project include?]
-- [Are there known biases in the data source or collection method?]
-
-> *The goal here is pre-emptive Q&A. What would a thoughtful skeptic push back on? Document the answer here, before they ask.*
+- Synthea generated patient data. Synthea's rule-based data generation system makes readmission patterns more learnable than real-world data because it lacks randomness and complex nuances. Performance on real-world data would likely be much lower. This model is not meant to be used in any real world scenario.
+- Efficacy is applied uniformly. The 20% figure is a population-level estimate and not validated for this specific scenario, and effectiveness would likely vary by condition and risk level.
+- Operational capacity not modeled or accounted for. The savings model assumes that every flagged patient will receive outreach and doesn't check this against staffing capacity or anything that would affect the ability to reach out to every single patient the same.
 
 ---
 
 ## 12. Future Enhancements
 
-<!--
-  WHAT GOOD LOOKS LIKE:
-  ✅ "Automate the monthly data pull from the POS export folder using
-      a scheduled Python script, replacing the current manual process."
-  ✅ "Expand the return rate analysis to include carrier-level data,
-      which was unavailable in this dataset but exists in the logistics system."
-
-  WHAT TO AVOID:
-  ❌ "Add a machine learning model."
-     (Vague, and disconnected from the actual findings of this project.)
-  ❌ Listing aspirational features that don't follow logically from the work.
--->
-
-- [ ] [Enhancement 1 - specific and traceable to a real gap in this project]
-- [ ] [Enhancement 2]
-- [ ] [Enhancement 3]
-- [ ] [Enhancement 4]
+- Validate the pipeline and model against a real (de-identified) claims or EHR dataset
+- Build a SHAP-based, clinician-facing explanation view for individual patient risk scores
+- Add prospective monitoring / drift detection if the model were ever deployed against a live data stream
 
 ---
 
@@ -511,22 +411,24 @@ erDiagram
 
 | Deliverable | Description | Location |
 |-------------|-------------|----------|
-| [Name] | [What it contains] | [`/path/to/file`] |
-| [Name] | [What it contains] | [`/path/to/file`] |
-| [Name] | [What it contains] | [`/path/to/file`] |
+| Trained model (XGBoost) | Final model artifact, deployed via SageMaker | `[/path/to/model]` |
+| `extract_model_metrics.py` | Script that pulls evaluation metrics for the Tableau suite | `/scripts/extract_model_metrics.py` |
+| Tableau Dashboard 1 | Pre-model data overview | `[/path/to/dashboard]` |
+| Tableau Dashboard 2 | Technical dashboard — PR curve, calibration, SHAP, threshold comparison | `[/path/to/dashboard]` |
+| Tableau Story | Six-point non-technical stakeholder narrative (setup, accuracy, patient impact, risk tiers, value, ask) | `[/path/to/story]` |
+| Written report | 11-section technical write-up, leakage investigation as centerpiece | `/reports/` |
 
 ---
 
 ## 14. Author
 
-**[Your Name]**
-[Your role or title - current or target]
+**Christian Fure**
+Computer Science graduate pursuing healthcare/clinical data analytics & machine learning
 
-- 🔗 [LinkedIn URL]
-- 💼 [Portfolio or GitHub profile URL]
-- 📧 [Email - optional]
+- 🔗 [https://www.linkedin.com/in/christian-fure-771462201/]
+- 💼 [Portfolio or GitHub profile URL](https://github.com/ChristianFure)
+- 📧 [christianjfure@gmail.com]
 
 ---
 
-*Last updated: [Month YYYY]*
-*If this template helped you, consider starring the repository.*
+*Last updated: [August 2026]*
