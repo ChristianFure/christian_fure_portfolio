@@ -416,7 +416,7 @@ This shows that recent utilization history and post-discharge planning are very 
 | Tableau Dashboard 1 | Pre-model data overview | `[/path/to/dashboard]` |
 | Tableau Dashboard 2 | Technical dashboard — PR curve, calibration, SHAP, threshold comparison | `[/path/to/dashboard]` |
 | Tableau Story | Six-point non-technical stakeholder narrative | `[/path/to/story]` |
-| Leakage Investigation Write-up | Detailed write-up on the leakage investigation, including methods used, tests ran, etc. | `/reports/` |
+| Leakage Investigation Write-up | Detailed write-up on the leakage investigation (methods used, tests ran, etc.) | `/reports/` |
 
 ---
 
