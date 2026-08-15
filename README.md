@@ -15,6 +15,8 @@
 - [ ] End-to-End (multiple of the above)
 - [ ] Other: ___________
 
+[Check it out](https://github.com/ChristianFure/christian_fure_portfolio/blob/main/data/raw/raw_data.md)
+
 ---
 
 ## Table of Contents
