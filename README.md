@@ -411,12 +411,12 @@ This shows that recent utilization history and post-discharge planning are very 
 
 | Deliverable | Description | Location |
 |-------------|-------------|----------|
-| Trained model (XGBoost) | Final model artifact, deployed via SageMaker | `[/path/to/model]` |
-| `extract_model_metrics.py` | Script that pulls evaluation metrics for the Tableau suite | `/scripts/extract_model_metrics.py` |
-| Tableau Dashboard 1 | Pre-model data overview | `[/path/to/dashboard]` |
-| Tableau Dashboard 2 | Technical dashboard — PR curve, calibration, SHAP, threshold comparison | `[/path/to/dashboard]` |
-| Tableau Story | Six-point non-technical stakeholder narrative | `[/path/to/story]` |
-| Leakage Investigation Write-up | Detailed write-up on the leakage investigation (methods used, tests ran, etc.) | `/reports/` |
+| Trained model (XGBoost) | Final model artifact, deployed via SageMaker | [`/code/model/model.tar.gz`](/code/model/model.tar.gz) |
+| `load_model_and_export_metrics.ipynb` | Script that loads model, runs it on data, and pulls evaluation metrics | `/code/notebooks/load_model_and_export_metrics.ipynb` |
+| Readmission Overview | Dashboard that shows the financial magnitude of readmissions | `/visuals/readmission_overview.md` |
+| Model Metrics Dashboard | Dashboard that shows technical model metrics. PR curve, calibration, SHAP, threshold comparison | `/visuals/model_metrics_overview.md` |
+| Tableau Story | Six-point non-technical stakeholder narrative | `/visuals/stakeholder_story.md` |
+| Leakage Investigation Write-up | Detailed write-up on the leakage investigation (methods used, tests ran, etc.) | `/reports/leakage_investigation_report.md` |
 
 ---
 
