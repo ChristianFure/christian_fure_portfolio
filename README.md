@@ -104,20 +104,20 @@ PostgreSQL · Tableau
 ## 4. Repository Structure
 
 ```
-readmission-prediction/
-│
-├── data/
-│   ├── raw/                  # Synthea-generated synthetic patient data
-│   ├── processed/            # Cleaned, feature-engineered tables
+readmission-classification-model/
 │
 ├── code/
-│   ├── notebooks/
 │   ├── model/
+│   ├── notebooks/
+│
+├── data/
+│   ├── processed/            # Cleaned, feature-engineered tables
+│   ├── raw/                  # Synthea-generated synthetic patient data
 │
 ├── queries/
 │   ├── final/                # Final model ready table
-│   ├── transformations/      # Staging → features schema logic, lookback windows, engineered features
 │   ├── ingestion/            # Data ingestion - raw synthea csvs -> sql database
+│   ├── transformations/      # Staging → features schema logic, lookback windows, engineered features
 │
 ├── reports/                  # Leakage investigation write-up
 │
