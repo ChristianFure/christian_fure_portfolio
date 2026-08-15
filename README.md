@@ -109,25 +109,21 @@ readmission-prediction/
 ├── data/
 │   ├── raw/                  # Synthea-generated synthetic patient data
 │   ├── processed/            # Cleaned, feature-engineered tables
-│   └── external/             # LOINC/ICD-10/RxNorm reference tables
 │
-├── notebooks/                # EDA, leakage investigation, model comparison notebooks
-│
-├── scripts/
-│   └── extract_model_metrics.py   # Pulls model + eval metrics for Tableau dashboards
+├── code/
+│   ├── notebooks/
+│   ├── model/
 │
 ├── queries/
-│   ├── exploratory/          # Ad-hoc investigation (incl. leakage audit queries)
-│   ├── transformations/      # Staging → features schema logic, lookback windows
-│   └── final/                # Production feature-build queries
+│   ├── final/                # Final model ready wide table
+│   ├── transformations/      # Staging → features schema logic, lookback windows, engineered features
+│   ├── ingestion/            # Data ingestion - raw synthea csvs -> sql database
 │
-├── reports/                  # Tableau Story export
+├── reports/                  # Leakage investigation write-up
 │
-├── visuals/                  # Dashboard exports, SHAP plots, ERD
+├── visuals/                  # Dashboard & story exports
+│   ├── images/               # Raw images
 │
-├── docs/                     # Data dictionary, schema notes, leakage investigation writeup
-│
-├── project_metadata.yml
 └── README.md
 ```
 
